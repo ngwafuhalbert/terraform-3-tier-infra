@@ -1,13 +1,11 @@
+resource "aws_db_subnet_group" "db_subnetgroup" {
+ name = "${var.tags["project"]}-${var.tags["application"]}-${var.tags["environment"]}-subnetgroup"
 
-resource "aws_db_subnet_group" "db_subnet_group" {
+ subnet_ids = [var.private_subnet1, var.private_subnet2]
 
-name        = "subnet-group"
-
-  subnet_ids = [var.private_subnet1, var.private_subnet2]
-
-tags = merge(var.tags,{
-Name = "${var.tags["project"]}-${var.tags["application"]}-${var.tags["environment"]}-subnet-group"
-})
+ tags = merge(var.tags,{
+  Name = "${var.tags["project"]}-${var.tags["application"]}-${var.tags["environment"]}-subnet-group"
+ })
 }
 
 resource "aws_security_group" "rds_sg" {
@@ -49,6 +47,6 @@ resource "aws_db_instance" "default" {
   password             = "foobarbaz"
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
-  db_subnet_group_name = aws_db_subnet_group.db_subnet_group.id
+  db_subnet_group_name = aws_db_subnet_group.db_subnetgroup.id
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
 }
